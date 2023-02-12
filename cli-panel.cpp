@@ -120,6 +120,83 @@ class Installer
 	}
 
 public:
+	Installer()
+	{
+		// db connection
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
+
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// Create softwares table
+		const char *sql = "CREATE TABLE IF NOT EXISTS softwares(id INTEGER PRIMARY KEY AUTOINCREMENT, software TEXT NOT NULL, version TEXT NOT NULL, created_at TEXT NOT NULL);";
+
+		// Execute SQL statement
+		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "SQL error: %s", zErrMsg);
+			sqlite3_free(zErrMsg);
+			exit(0);
+		}
+
+		// Close Connection
+		sqlite3_close(db);
+	}
+
+	void getCurrentSoftwares()
+	{
+		// db connection
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
+
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// read softwares from db
+		const char *sql = "SELECT * FROM softwares";
+		sqlite3_stmt *stmt;
+
+		// Prepare SQL statement
+		rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "Failed to fetch data: %s", sqlite3_errmsg(db));
+			sqlite3_close(db);
+			exit(0);
+		}
+
+		// Loop through the results and print them
+		// better looking output
+		cout << "+-------------------+-------------------+" << endl;
+		cout << "| Software          | Version           |" << endl;
+		cout << "+-------------------+-------------------+" << endl;
+		while (sqlite3_step(stmt) == SQLITE_ROW)
+		{
+			cout << "| " << sqlite3_column_text(stmt, 1) << " | " << sqlite3_column_text(stmt, 2) << endl;
+		}
+		cout << "+-------------------+-------------------+" << endl;
+
+		// Finalize statement
+		sqlite3_finalize(stmt);
+
+		// Close connection
+		sqlite3_close(db);
+	}
+
 	void install()
 	{
 		int selection;
@@ -325,6 +402,7 @@ int main()
 		switch (input)
 		{
 		case 0:
+			installer.getCurrentSoftwares();
 			installer.install();
 			break;
 		case 1:
