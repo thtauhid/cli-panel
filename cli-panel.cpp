@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <sqlite3.h>
+
 using namespace std;
 
 class Installer
@@ -142,39 +144,54 @@ public:
 
 int main()
 {
-	bool execute = true;
-	int input;
-	Installer installer;
-	Domain domain;
-	CliPanel cli;
+	// Create sqlite3 connection
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
 
-	cli.welcome();
+	rc = sqlite3_open("cli-panel.db", &db);
 
-	while (execute)
+	if (rc)
 	{
-		cli.selection();
-		cin >> input;
+		cout << "Unable to connect to DB: " << sqlite3_errmsg(db) << endl;
+		exit(0);
+	}
+	else
+	{
+		bool execute = true;
+		int input;
+		Installer installer;
+		Domain domain;
+		CliPanel cli;
+		cout << "Opened database successfully" << endl;
+		cli.welcome();
 
-		switch (input)
+		while (execute)
 		{
-		case 0:
-			installer.install();
-			break;
-		case 1:
-			domain.addDomain();
-			break;
-		case 2:
-			domain.viewDomains();
-			break;
-		case 3:
-			// installSoftware();
-			break;
-		case 4:
-			execute = false;
-			break;
-		default:
-			cout << "Invalid selection" << endl;
-			break;
+			cli.selection();
+			cin >> input;
+
+			switch (input)
+			{
+			case 0:
+				installer.install();
+				break;
+			case 1:
+				domain.addDomain();
+				break;
+			case 2:
+				domain.viewDomains();
+				break;
+			case 3:
+				// installSoftware();
+				break;
+			case 4:
+				execute = false;
+				break;
+			default:
+				cout << "Invalid selection" << endl;
+				break;
+			}
 		}
 	}
 
