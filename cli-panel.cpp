@@ -81,11 +81,38 @@ class Installer
 		switch (stack)
 		{
 		case 1: // node + nginx + pm2 + certbot
-			// TODO: Create a beautiful table with all the software that will be installed
+			cout << "The following software will be installed:" << endl
+				 << "+---------------------+" << endl
+				 << "| Software            |" << endl
+				 << "+---------------------+" << endl
+				 << "| Node.js             |" << endl
+				 << "| NPM                 |" << endl
+				 << "| Nginx               |" << endl
+				 << "| PM2                 |" << endl
+				 << "| Certbot             |" << endl
+				 << "+---------------------+" << endl;
 
 			break;
 		case 2: // php + mysql + nginx + certbot
-			/* code */
+			cout << "The following software will be installed:" << endl
+				 << "+---------------------+" << endl
+				 << "| Software            |" << endl
+				 << "+---------------------+" << endl
+				 << "| PHP                 |" << endl
+				 << "| PHP-FPM             |" << endl
+				 << "| PHP-MySQL           |" << endl
+				 << "| PHP-Curl            |" << endl
+				 << "| PHP-GD              |" << endl
+				 << "| PHP-MBString        |" << endl
+				 << "| PHP-XML             |" << endl
+				 << "| PHP-XMLRPC          |" << endl
+				 << "| PHP-SOAP            |" << endl
+				 << "| PHP-Intl            |" << endl
+				 << "| PHP-Zip             |" << endl
+				 << "| MySQL               |" << endl
+				 << "| Nginx               |" << endl
+				 << "| Certbot             |" << endl
+				 << "+---------------------+" << endl;
 			break;
 		default:
 			break;
@@ -99,8 +126,8 @@ public:
 
 		cout << endl
 			 << "Select your stack" << endl;
-		cout << "1. node + nginx + pm2 + certbot" << endl;
-		cout << "2. php + mysql + nginx + certbot" << endl;
+		cout << "1. Node.js + Nginx + PM2 + Certbot" << endl;
+		cout << "2. PHP + MySQL + Nginx + Certbot" << endl;
 
 		cout << endl
 			 << "> ";
