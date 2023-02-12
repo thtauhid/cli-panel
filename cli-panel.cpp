@@ -136,7 +136,6 @@ public:
 		switch (selection)
 		{
 		case 1:
-			// TODO: Show what will be installed
 			preInstallScreen(1);
 			installNode();
 			installNginx();
@@ -144,7 +143,6 @@ public:
 			installCertbot();
 			break;
 		case 2:
-			// TODO: Show what will be installed
 			preInstallScreen(2);
 			installPhp();
 			installMysql();
@@ -160,32 +158,54 @@ public:
 
 class Domain
 {
-	// WIP
-	// struct
-	// {
-	// 	// domain name
-	// 	string name;
-	// 	// domain path
-	// 	string path;
-	// 	// added by
-	// 	string addedBy;
-	// 	// date created
-	// 	time_t timeCreated;
-	// 	// date updated
-	// 	time_t timeUpdated;
-	// };
 
 public:
+	Domain()
+	{
+		// Create sqlite3 connection
+		sqlite3 *db;
+		int rc = sqlite3_open("cli-panel.db", &db);
+
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// Create domains table
+		const char *sql = "CREATE TABLE IF NOT EXISTS domains("
+						  "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+						  "domain TEXT NOT NULL,"
+						  "stack INTEGER NOT NULL,"
+						  "created_at DATETIME DEFAULT CURRENT_TIMESTAMP,"
+						  "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP"
+						  ");";
+
+		char *zErrMsg = 0;
+
+		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
+
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "SQL error: %s", zErrMsg);
+			sqlite3_free(zErrMsg);
+			exit(0);
+		}
+	}
 	void addDomain()
 	{
 		string domain;
 		cout << "Enter domain name: ";
 		cin >> domain;
 		cout << "Adding domain " << domain << endl;
+
+		// TODO: Add domain to db
 	}
 	void viewDomains()
 	{
 		cout << "Viewing domains" << endl;
+
+		// TODO: View domains from db
 	}
 };
 
@@ -213,54 +233,38 @@ public:
 
 int main()
 {
+	bool execute = true;
+	int input;
+	Installer installer;
+	Domain domain;
+	CliPanel cli;
+	cli.welcome();
 
-	// Create sqlite3 connection
-	sqlite3 *db;
-	int rc;
-
-	rc = sqlite3_open("cli-panel.db", &db);
-
-	if (rc)
+	while (execute)
 	{
-		cout << "Unable to connect to DB: " << sqlite3_errmsg(db) << endl;
-		exit(0);
-	}
-	else
-	{
-		bool execute = true;
-		int input;
-		Installer installer;
-		Domain domain;
-		CliPanel cli;
-		cout << "Opened database successfully" << endl;
-		cli.welcome();
+		cli.selection();
+		cin >> input;
 
-		while (execute)
+		switch (input)
 		{
-			cli.selection();
-			cin >> input;
-
-			switch (input)
-			{
-			case 0:
-				installer.install();
-				break;
-			case 1:
-				domain.addDomain();
-				break;
-			case 2:
-				domain.viewDomains();
-				break;
-			case 3:
-				// installSoftware();
-				break;
-			case 4:
-				execute = false;
-				break;
-			default:
-				cout << "Invalid selection" << endl;
-				break;
-			}
+		case 0:
+			installer.install();
+			break;
+		case 1:
+			domain.addDomain();
+			break;
+		case 2:
+			domain.viewDomains();
+			break;
+		case 3:
+			// installSoftware();
+			break;
+		case 4:
+			execute = false;
+			break;
+		default:
+			cout << "Invalid selection" << endl;
+			break;
 		}
 	}
 
