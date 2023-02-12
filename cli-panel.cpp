@@ -89,6 +89,20 @@ public:
 
 class Domain
 {
+	// WIP
+	// struct
+	// {
+	// 	// domain name
+	// 	string name;
+	// 	// domain path
+	// 	string path;
+	// 	// added by
+	// 	string addedBy;
+	// 	// date created
+	// 	time_t timeCreated;
+	// 	// date updated
+	// 	time_t timeUpdated;
+	// };
 
 public:
 	void addDomain()
