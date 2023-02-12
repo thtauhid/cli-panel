@@ -262,12 +262,19 @@ public:
 			exit(0);
 		}
 
-		// TODO: Better table view
 		cout << "Viewing domains" << endl;
+
+		cout << "+---------------------+" << endl
+			 << "| ID | Domain         |" << endl
+			 << "+---------------------+" << endl;
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << endl;
+			cout << "| " << sqlite3_column_int(stmt, 0) << " | " << sqlite3_column_text(stmt, 1) << endl;
 		}
+
+		cout << "+---------------------+" << endl;
+
+		sqlite3_finalize(stmt);
 
 		sqlite3_close(db);
 	}
