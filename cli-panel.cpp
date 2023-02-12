@@ -162,10 +162,12 @@ class Domain
 public:
 	Domain()
 	{
-		// Create sqlite3 connection
 		sqlite3 *db;
-		int rc = sqlite3_open("cli-panel.db", &db);
+		char *zErrMsg = 0;
+		int rc;
 
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
 		if (rc)
 		{
 			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
@@ -173,24 +175,17 @@ public:
 		}
 
 		// Create domains table
-		const char *sql = "CREATE TABLE IF NOT EXISTS domains("
-						  "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-						  "domain TEXT NOT NULL,"
-						  "stack INTEGER NOT NULL,"
-						  "created_at DATETIME DEFAULT CURRENT_TIMESTAMP,"
-						  "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP"
-						  ");";
-
-		char *zErrMsg = 0;
+		const char *sql = "CREATE TABLE IF NOT EXISTS domains(id INTEGER PRIMARY KEY AUTOINCREMENT, domain TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP);";
 
 		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
-
 		if (rc != SQLITE_OK)
 		{
 			fprintf(stderr, "SQL error: %s", zErrMsg);
 			sqlite3_free(zErrMsg);
 			exit(0);
 		}
+
+		sqlite3_close(db);
 	}
 	void addDomain()
 	{
@@ -203,9 +198,40 @@ public:
 	}
 	void viewDomains()
 	{
-		cout << "Viewing domains" << endl;
+		// init db
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
 
-		// TODO: View domains from db
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// get domains
+		const char *sql = "SELECT * FROM domains";
+		sqlite3_stmt *stmt;
+		rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "SQL error: %s", zErrMsg);
+			sqlite3_free(zErrMsg);
+			exit(0);
+		}
+
+		// TODO: Better table view
+		while (sqlite3_step(stmt) == SQLITE_ROW)
+		{
+			cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << endl;
+		}
+
+		sqlite3_close(db);
+
+		cout << "Viewing domains" << endl;
 	}
 };
 
@@ -233,11 +259,17 @@ public:
 
 int main()
 {
+
+	// sqlite3 *db;
+
+	// Create sqlite3 connection
+	// int rc = sqlite3_open("cli-panel.db", &db);
+
 	bool execute = true;
 	int input;
-	Installer installer;
-	Domain domain;
-	CliPanel cli;
+	Installer installer = Installer();
+	Domain domain = Domain();
+	CliPanel cli = CliPanel();
 	cli.welcome();
 
 	while (execute)
