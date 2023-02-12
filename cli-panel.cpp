@@ -5,7 +5,7 @@ using namespace std;
 
 class Installer
 {
-	// Installs Node.js
+	// // Installs Node.js
 	void installNode()
 	{
 		system("sudo apt-get update");
