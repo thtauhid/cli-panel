@@ -1,3 +1,4 @@
+#include "fort.hpp"
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -13,6 +14,8 @@ class Installer
 		system("sudo apt-get update");
 		system("sudo apt-get install nodejs");
 		system("sudo apt-get install npm");
+
+		// TODO: Create entry in db for node & npm version
 	};
 
 	// Installs PHP
@@ -20,6 +23,19 @@ class Installer
 	{
 		system("sudo apt-get update");
 		system("sudo apt-get install php");
+		system("sudo apt-get install php-fpm");
+		system("sudo apt-get install php-mysql");
+		system("sudo apt-get install php-curl");
+		system("sudo apt-get install php-gd");
+		system("sudo apt-get install php-mbstring");
+		system("sudo apt-get install php-xml");
+		system("sudo apt-get install php-xmlrpc");
+		system("sudo apt-get install php-soap");
+		system("sudo apt-get install php-intl");
+		system("sudo apt-get install php-zip");
+
+		// TODO: Create entry in db for php version
+		// TODO: Create entry in db for all php extensions
 	};
 
 	// Installs Nginx
@@ -27,6 +43,8 @@ class Installer
 	{
 		system("sudo apt-get update");
 		system("sudo apt-get install nginx");
+
+		// TODO: Create entry in db for nginx version
 	};
 
 	// Installs MySQL
@@ -34,12 +52,16 @@ class Installer
 	{
 		system("sudo apt-get update");
 		system("sudo apt-get install mysql-server");
+
+		// TODO: Create entry in db for mysql version
 	};
 
 	// Installs PM2
 	void installPm2()
 	{
 		system("sudo npm install -g pm2");
+
+		// TODO: Create entry in db for pm2 version
 	};
 
 	// Installs Let's Encrypt Certbot
@@ -51,12 +73,31 @@ class Installer
 		system("sudo add-apt-repository ppa:certbot/certbot");
 		system("sudo apt-get update");
 		system("sudo apt-get install certbot python-certbot-nginx");
+
+		// TODO: Create entry in db for certbot version
 	};
+
+	void preInstallScreen(int stack)
+	{
+		switch (stack)
+		{
+		case 1: // node + nginx + pm2 + certbot
+			// TODO: Create a beautiful table with all the software that will be installed
+
+			break;
+		case 2: // php + mysql + nginx + certbot
+			/* code */
+			break;
+		default:
+			break;
+		}
+	}
 
 public:
 	void install()
 	{
 		int selection;
+
 		cout << endl
 			 << "Select your stack" << endl;
 		cout << "1. node + nginx + pm2 + certbot" << endl;
@@ -69,14 +110,16 @@ public:
 		switch (selection)
 		{
 		case 1:
-			cout << "Installing node + nginx + pm2 + certbot" << endl;
+			// TODO: Show what will be installed
+			preInstallScreen(1);
 			installNode();
 			installNginx();
 			installPm2();
 			installCertbot();
 			break;
 		case 2:
-			cout << "Installing php + mysql + nginx + certbot" << endl;
+			// TODO: Show what will be installed
+			preInstallScreen(2);
 			installPhp();
 			installMysql();
 			installNginx();
@@ -144,9 +187,36 @@ public:
 
 int main()
 {
+	fort::char_table table;
+	/* Change border style */
+	// table.set_border_style(FT_DOUBLE2_STYLE);
+
+	// table << fort::header
+	// 	  << "Movie title"
+	// 	  << "Director"
+	// 	  << "Year"
+	// 	  << "Rating" << fort::endr
+	// 	  << "The Shawshank Redemption"
+	// 	  << "Frank Darabont"
+	// 	  << "1994"
+	// 	  << "9.5" << fort::endr
+	// 	  << "The Godfather"
+	// 	  << "Francis Ford Coppola"
+	// 	  << "1972"
+	// 	  << "9.2" << fort::endr
+	// 	  << "2001: A Space Odyssey"
+	// 	  << "Stanley Kubrick"
+	// 	  << "1968"
+	// 	  << "8.5" << fort::endr;
+
+	/* Set center alignment for the 1st and 3rd columns */
+	// table.column(1).set_cell_text_align(fort::text_align::center);
+	// table.column(3).set_cell_text_align(fort::text_align::center);
+
+	// std::cout << table.to_string() << std::endl;
+
 	// Create sqlite3 connection
 	sqlite3 *db;
-	char *zErrMsg = 0;
 	int rc;
 
 	rc = sqlite3_open("cli-panel.db", &db);
