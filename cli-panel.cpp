@@ -195,6 +195,45 @@ public:
 		cout << "Adding domain " << domain << endl;
 
 		// TODO: Add domain to db
+
+		// connect to db
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
+
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// Add domain to db
+		const char *sql = "INSERT INTO domains(domain) VALUES(?)";
+		sqlite3_stmt *stmt;
+		rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "SQL error: %s", zErrMsg);
+			sqlite3_free(zErrMsg);
+			exit(0);
+		}
+
+		sqlite3_bind_text(stmt, 1, domain.c_str(), -1, SQLITE_TRANSIENT);
+
+		rc = sqlite3_step(stmt);
+		if (rc != SQLITE_DONE)
+		{
+			fprintf(stderr, "SQL error: %s", zErrMsg);
+			sqlite3_free(zErrMsg);
+			exit(0);
+		}
+
+		sqlite3_finalize(stmt);
+
+		sqlite3_close(db);
 	}
 	void viewDomains()
 	{
@@ -224,14 +263,13 @@ public:
 		}
 
 		// TODO: Better table view
+		cout << "Viewing domains" << endl;
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
 			cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << endl;
 		}
 
 		sqlite3_close(db);
-
-		cout << "Viewing domains" << endl;
 	}
 };
 
