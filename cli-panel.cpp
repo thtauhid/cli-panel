@@ -1,4 +1,3 @@
-#include "fort.hpp"
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -187,33 +186,6 @@ public:
 
 int main()
 {
-	fort::char_table table;
-	/* Change border style */
-	// table.set_border_style(FT_DOUBLE2_STYLE);
-
-	// table << fort::header
-	// 	  << "Movie title"
-	// 	  << "Director"
-	// 	  << "Year"
-	// 	  << "Rating" << fort::endr
-	// 	  << "The Shawshank Redemption"
-	// 	  << "Frank Darabont"
-	// 	  << "1994"
-	// 	  << "9.5" << fort::endr
-	// 	  << "The Godfather"
-	// 	  << "Francis Ford Coppola"
-	// 	  << "1972"
-	// 	  << "9.2" << fort::endr
-	// 	  << "2001: A Space Odyssey"
-	// 	  << "Stanley Kubrick"
-	// 	  << "1968"
-	// 	  << "8.5" << fort::endr;
-
-	/* Set center alignment for the 1st and 3rd columns */
-	// table.column(1).set_cell_text_align(fort::text_align::center);
-	// table.column(3).set_cell_text_align(fort::text_align::center);
-
-	// std::cout << table.to_string() << std::endl;
 
 	// Create sqlite3 connection
 	sqlite3 *db;
