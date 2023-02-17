@@ -238,7 +238,11 @@ public:
 		cout << "+-------------------+" << endl;
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			cout << "| " << sqlite3_column_text(stmt, 1) << endl;
+			string output = "| ";
+			output.append((char *)sqlite3_column_text(stmt, 1));
+			output.append(20 - output.length(), ' ');
+			output.append("|");
+			cout << output << endl;
 		}
 		cout << "+-------------------+" << endl;
 
@@ -400,7 +404,17 @@ public:
 			 << "+---------------------+" << endl;
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			cout << "| " << sqlite3_column_int(stmt, 0) << " | " << sqlite3_column_text(stmt, 1) << endl;
+			string id = (char *)sqlite3_column_text(stmt, 0);
+			string domain = (char *)sqlite3_column_text(stmt, 1);
+
+			string output = "| ";
+			output.append(id);
+			output.append(2 - id.length(), ' ');
+			output.append(" | ");
+			output.append(domain);
+			output.append(22 - output.length(), ' ');
+			output.append("|");
+			cout << output << endl;
 		}
 
 		cout << "+---------------------+" << endl;
