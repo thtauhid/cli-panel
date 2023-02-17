@@ -32,9 +32,6 @@ class Installer
 		system("sudo apt-get install php-soap");
 		system("sudo apt-get install php-intl");
 		system("sudo apt-get install php-zip");
-
-		// TODO: Create entry in db for php version
-		// TODO: Create entry in db for all php extensions
 	};
 
 	// Installs Nginx
@@ -42,8 +39,6 @@ class Installer
 	{
 		system("sudo apt-get update");
 		system("sudo apt-get install nginx");
-
-		// TODO: Create entry in db for nginx version
 	};
 
 	// Installs MySQL
@@ -51,16 +46,12 @@ class Installer
 	{
 		system("sudo apt-get update");
 		system("sudo apt-get install mysql-server");
-
-		// TODO: Create entry in db for mysql version
 	};
 
 	// Installs PM2
 	void installPm2()
 	{
 		system("sudo npm install -g pm2");
-
-		// TODO: Create entry in db for pm2 version
 	};
 
 	// Installs Let's Encrypt Certbot
@@ -72,8 +63,6 @@ class Installer
 		system("sudo add-apt-repository ppa:certbot/certbot");
 		system("sudo apt-get update");
 		system("sudo apt-get install certbot python-certbot-nginx");
-
-		// TODO: Create entry in db for certbot version
 	};
 
 	void preInstallScreen(int stack)
@@ -119,6 +108,69 @@ class Installer
 		}
 	}
 
+	void addStackToDb(int stack)
+	{
+		// db connection
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
+
+		// Create Connection
+		rc = sqlite3_open("cli-panel.db", &db);
+		if (rc)
+		{
+			fprintf(stderr, "Can't open database: %s", sqlite3_errmsg(db));
+			exit(0);
+		}
+
+		// add stack to db
+
+		switch (stack)
+		{
+
+		case 1: // node + nginx + pm2 + certbot
+		{
+
+			string tech[4] = {"node", "nginx", "pm2", "certbot"};
+
+			for (int i = 0; i < 4; i++)
+			{
+				string sql = "INSERT INTO softwares (software, created_at) VALUES ('" + tech[i] + "', '" + to_string(time(0)) + "');";
+				rc = sqlite3_exec(db, sql.c_str(), 0, 0, &zErrMsg);
+				if (rc != SQLITE_OK)
+				{
+					fprintf(stderr, "SQL error: %s", zErrMsg);
+					sqlite3_free(zErrMsg);
+					exit(0);
+				}
+			}
+			break;
+		}
+		case 2: // php + mysql + nginx + certbot
+		{
+			string tech[4] = {"php", "mysql", "nginx", "certbot"};
+
+			for (int i = 0; i < 4; i++)
+			{
+				string sql = "INSERT INTO softwares (software, created_at) VALUES ('" + tech[i] + "', '" + to_string(time(0)) + "');";
+				rc = sqlite3_exec(db, sql.c_str(), 0, 0, &zErrMsg);
+				if (rc != SQLITE_OK)
+				{
+					fprintf(stderr, "SQL error: %s", zErrMsg);
+					sqlite3_free(zErrMsg);
+					exit(0);
+				}
+			}
+			break;
+		}
+		default:
+			break;
+		}
+
+		// Close Connection
+		sqlite3_close(db);
+	}
+
 public:
 	Installer()
 	{
@@ -136,7 +188,7 @@ public:
 		}
 
 		// Create softwares table
-		const char *sql = "CREATE TABLE IF NOT EXISTS softwares(id INTEGER PRIMARY KEY AUTOINCREMENT, software TEXT NOT NULL, version TEXT NOT NULL, created_at TEXT NOT NULL);";
+		const char *sql = "CREATE TABLE IF NOT EXISTS softwares(id INTEGER PRIMARY KEY AUTOINCREMENT, software TEXT NOT NULL, created_at TEXT NOT NULL);";
 
 		// Execute SQL statement
 		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
@@ -181,14 +233,14 @@ public:
 
 		// Loop through the results and print them
 		// better looking output
-		cout << "+-------------------+-------------------+" << endl;
-		cout << "| Software          | Version           |" << endl;
-		cout << "+-------------------+-------------------+" << endl;
+		cout << "+-------------------+" << endl;
+		cout << "| Software          |" << endl;
+		cout << "+-------------------+" << endl;
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			cout << "| " << sqlite3_column_text(stmt, 1) << " | " << sqlite3_column_text(stmt, 2) << endl;
+			cout << "| " << sqlite3_column_text(stmt, 1) << endl;
 		}
-		cout << "+-------------------+-------------------+" << endl;
+		cout << "+-------------------+" << endl;
 
 		// Finalize statement
 		sqlite3_finalize(stmt);
@@ -214,10 +266,11 @@ public:
 		{
 		case 1:
 			preInstallScreen(1);
-			installNode();
-			installNginx();
-			installPm2();
-			installCertbot();
+			addStackToDb(1);
+			// installNode();
+			// installNginx();
+			// installPm2();
+			// installCertbot();
 			break;
 		case 2:
 			preInstallScreen(2);
@@ -225,6 +278,7 @@ public:
 			installMysql();
 			installNginx();
 			installCertbot();
+			addStackToDb(2);
 			break;
 		default:
 			cout << "Invalid selection" << endl;
@@ -382,11 +436,6 @@ public:
 int main()
 {
 
-	// sqlite3 *db;
-
-	// Create sqlite3 connection
-	// int rc = sqlite3_open("cli-panel.db", &db);
-
 	bool execute = true;
 	int input;
 	Installer installer = Installer();
@@ -402,6 +451,7 @@ int main()
 		switch (input)
 		{
 		case 0:
+			cout << "Currently Installed Softwares:" << endl;
 			installer.getCurrentSoftwares();
 			installer.install();
 			break;
