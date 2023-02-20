@@ -376,10 +376,17 @@ public:
 	// Create new folder for domain
 	void createDomainFolder(string domain)
 	{
+		// Create folder
 		string command = "sudo mkdir /var/www/" + domain;
 		system(command.c_str());
 
 		cout << "Created folder /var/www/" << domain << endl;
+
+		// Change permissions
+		string changePermissionCommand = "sudo chown -R www-data /var/www/" + domain;
+		system(changePermissionCommand.c_str());
+
+		cout << "Updated permissions for /var/www/" << domain << endl;
 	}
 
 	void viewDomains()
