@@ -376,7 +376,7 @@ public:
 	// Create new folder for domain
 	void createDomainFolder(string domain)
 	{
-		string command = "mkdir /var/www/" + domain;
+		string command = "sudo mkdir /var/www/" + domain;
 		system(command.c_str());
 
 		cout << "Created folder /var/www/" << domain << endl;
