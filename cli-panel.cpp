@@ -322,6 +322,7 @@ public:
 
 		sqlite3_close(db);
 	}
+
 	void addDomain()
 	{
 		string domain;
@@ -329,7 +330,8 @@ public:
 		cin >> domain;
 		cout << "Adding domain " << domain << endl;
 
-		// TODO: Add domain to db
+		// create domain folder
+		this->createDomainFolder(domain);
 
 		// connect to db
 		sqlite3 *db;
@@ -370,6 +372,16 @@ public:
 
 		sqlite3_close(db);
 	}
+
+	// Create new folder for domain
+	void createDomainFolder(string domain)
+	{
+		string command = "mkdir /var/www/" + domain;
+		system(command.c_str());
+
+		cout << "Created folder /var/www/" << domain << endl;
+	}
+
 	void viewDomains()
 	{
 		// init db
@@ -471,6 +483,7 @@ int main()
 			break;
 		case 1:
 			domain.addDomain();
+			// TODO: Add domain to nginx
 			break;
 		case 2:
 			domain.viewDomains();
